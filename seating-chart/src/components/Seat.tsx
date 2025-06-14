@@ -72,7 +72,7 @@ const Seat: React.FC<Props> = ({ seatNumber, assignedPerson, onAssignPerson, onR
               borderRadius: '3px'
             }}
           >
-            {assignedPerson.groupId ? 'Remove Group' : 'Remove'}
+            {assignedPerson.groupId ? 'Unseat Group' : 'Unseat Person'}
           </button>
         </div>
       ) : (

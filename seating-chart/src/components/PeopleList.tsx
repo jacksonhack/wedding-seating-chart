@@ -48,12 +48,27 @@ const PeopleList: React.FC<Props> = ({ people, onGroupUpdate }) => {
     return a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName);
   });
 
+  const ungroup = () => {
+    if (selected.size === 0) return;
+    onGroupUpdate(
+      people.map((p) =>
+        selected.has(p.id) ? { ...p, groupId: null } : p
+      )
+    );
+    setSelected(new Set());
+  };
+
   return (
     <div>
       <h3>People</h3>
-      <button onClick={group} disabled={selected.size < 2}>
-        Link Selected as Group
-      </button>
+      <div style={{ marginBottom: '10px' }}>
+        <button onClick={group} disabled={selected.size < 2} style={{ marginRight: '10px' }}>
+          Link Selected as Group
+        </button>
+        <button onClick={ungroup} disabled={selected.size === 0}>
+          Ungroup Selected
+        </button>
+      </div>
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {sortedPeople.map((p) => (
           <DraggablePerson
@@ -96,13 +111,15 @@ const DraggablePerson = ({
       style={{
         padding: '6px',
         margin: '4px 0',
-        border: person.groupId ? `3px solid #${stringToColor(person.groupId)}` : '1px solid #ccc',
+        border: person.groupId ? `3px solid #${stringToColor(person.groupId)}` : (isSelected ? '2px solid #66b' : '1px solid #ccc'),
         background: isSelected ? '#def' : '#fff',
         cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
       }}
     >
+      <span style={{ marginRight: '8px', fontSize: '14px' }}>{isSelected ? '✓' : ' '}</span>
       {person.firstName} {person.lastName}
-      {person.groupId ? ` (Group)` : ''}
     </li>
   );
 };
