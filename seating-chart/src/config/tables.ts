@@ -7,14 +7,14 @@ export type TableConfig = {
 };
 
 export const defaultTables: TableConfig[] = [
-  ...Array.from({ length: 16 }, (_, i) => ({
-    id: `table-${i + 1}`,
-    name: `Table ${i + 1}`,
-    seatCount: 10,
-  })),
   {
     id: 'head-table',
     name: 'Head Table',
     seatCount: 16,
   },
+  ...Array.from({ length: 16 }, (_, i) => ({
+    id: `table-${i + 1}`,
+    name: `Table ${i + 1}`,
+    seatCount: 10,
+  })),
 ];
