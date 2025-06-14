@@ -59,17 +59,19 @@ const PeopleList: React.FC<Props> = ({ people, onGroupUpdate }) => {
   };
 
   return (
-    <div>
-      <h3>People</h3>
-      <div style={{ marginBottom: '10px' }}>
-        <button onClick={group} disabled={selected.size < 2} style={{ marginRight: '10px' }}>
-          Link Selected as Group
-        </button>
-        <button onClick={ungroup} disabled={selected.size === 0}>
-          Ungroup Selected
-        </button>
+    <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1, paddingBottom: '15px', borderBottom: '1px solid #e0e0e0' }}>
+        <h3 style={{ margin: 0, marginBottom: '15px' }}>People</h3>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={group} disabled={selected.size < 2}>
+            Link as Group
+          </button>
+          <button onClick={ungroup} disabled={selected.size === 0}>
+            Ungroup Selected
+          </button>
+        </div>
       </div>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0, overflowY: 'auto', flex: 1 }}>
         {sortedPeople.map((p) => (
           <DraggablePerson
             key={p.id}
@@ -109,17 +111,20 @@ const DraggablePerson = ({
       ref={drag as unknown as React.Ref<HTMLLIElement>}
       onClick={onClick}
       style={{
-        padding: '6px',
-        margin: '4px 0',
-        border: person.groupId ? `3px solid #${stringToColor(person.groupId)}` : (isSelected ? '2px solid #66b' : '1px solid #ccc'),
-        background: isSelected ? '#def' : '#fff',
+        padding: '12px 15px',
+        margin: '5px 0',
+        border: person.groupId ? `3px solid #${stringToColor(person.groupId)}` : (isSelected ? '2px solid #5b507a' : '1px solid #e0e0e0'),
+        background: isSelected ? '#f0eaff' : '#fff',
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
+        borderRadius: '8px',
+        transition: 'background-color 0.2s ease, border-color 0.2s ease',
+        boxShadow: isSelected ? '0 2px 6px rgba(91, 80, 122, 0.2)' : 'none'
       }}
     >
-      <span style={{ marginRight: '8px', fontSize: '14px' }}>{isSelected ? '✓' : ' '}</span>
-      {person.firstName} {person.lastName}
+      <span style={{ marginRight: '12px', fontSize: '1rem', color: isSelected ? '#5b507a' : '#333', fontWeight: isSelected ? 'bold' : 'normal' }}>{isSelected ? '✓' : ' '}</span>
+      <span style={{ fontSize: '1rem', fontWeight: '500' }}>{person.firstName} {person.lastName}</span>
     </li>
   );
 };

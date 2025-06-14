@@ -174,21 +174,37 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
   }, [onAssignmentChange]);
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-      {tables.map(table => (
-        <Table
-          key={table.id}
-          id={table.id}
-          name={table.name}
-          seatCount={table.seatCount}
-          assignments={globalAssignments[table.id] || {}}
-          onAssignPerson={(seatNumber, person) => 
-            assignPersonToSeat(table.id, seatNumber, person)
-          }
-          onRemovePerson={(seatNumber) => 
-            removePersonFromSeat(table.id, seatNumber)
-          }
-        />
+    <div style={{ 
+      display: 'flex', 
+      flexWrap: 'wrap', 
+      gap: '20px', 
+      justifyContent: 'center',
+      width: '100%',
+      maxWidth: '100vw',
+      boxSizing: 'border-box',
+      padding: '10px'
+    }}>
+      {tables.map((table) => (
+        <div key={table.id} style={{
+          flex: table.name.toLowerCase().includes('head') ? '1 1 100%' : '0 1 calc(33.33% - 40px)',
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: '20px'
+        }}>
+          <Table
+            id={table.id}
+            name={table.name}
+            seatCount={table.seatCount}
+            assignments={globalAssignments[table.id] || {}}
+            onAssignPerson={(seatNumber, person) => 
+              assignPersonToSeat(table.id, seatNumber, person)
+            }
+            onRemovePerson={(seatNumber) => 
+              removePersonFromSeat(table.id, seatNumber)
+            }
+            isRectangular={table.name.toLowerCase().includes('head')}
+          />
+        </div>
       ))}
     </div>
   );

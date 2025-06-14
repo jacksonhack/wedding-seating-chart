@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './App.css';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import PeopleList from './components/PeopleList';
@@ -90,17 +91,19 @@ const App: React.FC = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div style={{ display: 'flex', gap: '32px', padding: '20px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div className="App">
+        <div className="people-section">
           <AddPersonForm onAddPerson={handleAddPerson} />
           <PeopleList people={unseatedPeople} onGroupUpdate={setPeople} />
         </div>
-        <SeatingChart 
-          tables={defaultTables} 
-          onAssignmentChange={handleAssignmentChange} 
-          assignments={assignments} 
-          onAssignmentsUpdate={setAssignments} 
-        />
+        <div className="seating-chart-section">
+          <SeatingChart 
+            tables={defaultTables} 
+            onAssignmentChange={handleAssignmentChange} 
+            assignments={assignments} 
+            onAssignmentsUpdate={setAssignments} 
+          />
+        </div>
       </div>
     </DndProvider>
   );

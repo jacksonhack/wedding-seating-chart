@@ -23,27 +23,24 @@ const AddPersonForm: React.FC<Props> = ({ onAddPerson }) => {
   };
 
   return (
-    <div style={{ marginBottom: '20px' }}>
+    <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
       <h3>Add New Person</h3>
-      <div style={{ display: 'flex', gap: '10px' }}>
+      <div style={{ display: 'flex', gap: '12px', marginTop: '15px' }}>
         <input
           type="text"
           placeholder="First Name"
           value={newFirstName}
           onChange={(e) => setNewFirstName(e.target.value)}
-          style={{ padding: '5px' }}
         />
         <input
           type="text"
           placeholder="Last Name"
           value={newLastName}
           onChange={(e) => setNewLastName(e.target.value)}
-          style={{ padding: '5px' }}
         />
         <button
           onClick={addPerson}
           disabled={newFirstName.trim() === '' || newLastName.trim() === ''}
-          style={{ padding: '5px 10px' }}
         >
           Add Person
         </button>

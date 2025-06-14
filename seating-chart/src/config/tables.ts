@@ -10,7 +10,7 @@ export const defaultTables: TableConfig[] = [
   {
     id: 'head-table',
     name: 'Head Table',
-    seatCount: 16,
+    seatCount: 18,
   },
   ...Array.from({ length: 16 }, (_, i) => ({
     id: `table-${i + 1}`,

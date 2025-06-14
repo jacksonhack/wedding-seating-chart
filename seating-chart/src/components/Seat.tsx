@@ -20,7 +20,7 @@ type Props = {
 };
 
 const Seat: React.FC<Props> = ({ seatNumber, assignedPerson, onAssignPerson, onRemovePerson }) => {
-  const ref = useRef<HTMLLIElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   const [, drop] = useDrop({
     accept: 'PERSON_GROUP',
@@ -36,8 +36,8 @@ const Seat: React.FC<Props> = ({ seatNumber, assignedPerson, onAssignPerson, onR
   });
 
   return (
-    <li
-      ref={(el) => {
+    <div
+      ref={(el: HTMLDivElement | null) => {
         ref.current = el;
         drop(el);
         if (assignedPerson) {
@@ -45,42 +45,59 @@ const Seat: React.FC<Props> = ({ seatNumber, assignedPerson, onAssignPerson, onR
         }
       }}
       style={{
-        border: assignedPerson?.groupId ? `3px solid #${stringToColor(assignedPerson.groupId)}` : '1px solid #888',
-        borderRadius: '4px',
-        padding: '6px',
-        width: '100px',
-        height: assignedPerson ? '60px' : '40px',
-        background: assignedPerson ? '#cff' : '#eee',
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
         textAlign: 'center',
         position: 'relative',
         cursor: assignedPerson ? 'grab' : 'default',
+        padding: '5px',
+        boxSizing: 'border-box',
+        color: assignedPerson ? '#fff' : '#666',
+        fontSize: assignedPerson ? (assignedPerson.firstName.length + assignedPerson.lastName.length > 40 ? '0.6rem' : assignedPerson.firstName.length + assignedPerson.lastName.length > 30 ? '0.65rem' : assignedPerson.firstName.length + assignedPerson.lastName.length > 20 ? '0.7rem' : assignedPerson.firstName.length + assignedPerson.lastName.length > 15 ? '0.75rem' : '0.8rem') : '0.8rem',
+        lineHeight: '1.2',
+        backgroundColor: assignedPerson?.groupId ? `#${stringToColor(assignedPerson.groupId)}` : (assignedPerson ? '#5b507a' : 'transparent'),
+        border: '2px solid #fff'
       }}
     >
       {assignedPerson ? (
-        <div>
-          <div style={{ marginBottom: '4px' }}>
+        <>
+          <span style={{ fontWeight: 'bold', maxWidth: '100%', whiteSpace: 'normal' }}>
             {`${assignedPerson.firstName} ${assignedPerson.lastName}`}
-          </div>
+          </span>
           <button 
             onClick={onRemovePerson}
             style={{
-              fontSize: '12px',
-              padding: '2px 6px',
+              position: 'absolute',
+              top: '-8px',
+              right: '-8px',
+              background: '#ff6b6b',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: '18px',
+              height: '18px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
               cursor: 'pointer',
-              background: '#ffdddd',
-              border: '1px solid #ff9999',
-              borderRadius: '3px'
+              fontSize: '11px',
+              padding: 0,
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+              zIndex: 10
             }}
           >
-            {assignedPerson.groupId ? 'Unseat Group' : 'Unseat Person'}
+            ✕
           </button>
-        </div>
+        </>
       ) : (
-        <div style={{ lineHeight: '40px' }}>
-          {`Seat ${seatNumber}`}
-        </div>
+        <span>{seatNumber}</span>
       )}
-    </li>
+    </div>
   );
 };
 
