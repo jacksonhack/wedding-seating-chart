@@ -61,7 +61,7 @@ const PeopleList: React.FC<Props> = ({ people, onGroupUpdate }) => {
   return (
     <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1, paddingBottom: '15px', borderBottom: '1px solid #e0e0e0' }}>
-        <h3 style={{ margin: 0, marginBottom: '15px' }}>People</h3>
+        <h3 style={{ margin: 0, marginBottom: '15px' }}>Guests</h3>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button onClick={group} disabled={selected.size < 2}>
             Link as Group
