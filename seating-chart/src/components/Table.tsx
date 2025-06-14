@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Seat from './Seat';
 import { type Person } from '../types';
 
@@ -6,29 +6,18 @@ type Props = {
   id: string;
   name: string;
   seatCount: number;
+  assignments: { [seatNumber: string]: Person | null };
+  onAssignPerson: (seatNumber: number, person: Person | Person[]) => void;
+  onRemovePerson: (seatNumber: number) => void;
 };
 
-type SeatAssignment = {
-  [seatNumber: string]: Person | null;
-};
-
-const Table: React.FC<Props> = ({ name, seatCount }) => {
-  const [assignments, setAssignments] = useState<SeatAssignment>({});
-
-  const assign = (seatNumber: number, personOrGroup: Person | Person[]) => {
-    setAssignments((prev) => {
-      const next = { ...prev };
-      if (Array.isArray(personOrGroup)) {
-        personOrGroup.forEach((p, i) => {
-          next[(seatNumber + i).toString()] = p;
-        });
-      } else {
-        next[seatNumber.toString()] = personOrGroup;
-      }
-      return next;
-    });
-  };
-
+const Table: React.FC<Props> = ({ 
+  name, 
+  seatCount, 
+  assignments, 
+  onAssignPerson, 
+  onRemovePerson 
+}) => {
   return (
     <div style={{ border: '1px solid #ccc', padding: '8px', width: '220px' }}>
       <h4>{name}</h4>
@@ -40,7 +29,8 @@ const Table: React.FC<Props> = ({ name, seatCount }) => {
               key={seatNumber}
               seatNumber={seatNumber}
               assignedPerson={assignments[seatNumber.toString()] || null}
-              onAssignPerson={(p) => assign(seatNumber, p)}
+              onAssignPerson={(p) => onAssignPerson(seatNumber, p)}
+              onRemovePerson={() => onRemovePerson(seatNumber)}
             />
           );
         })}
