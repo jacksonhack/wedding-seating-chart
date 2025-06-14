@@ -11,9 +11,32 @@ const DATA_FILE = path.join(__dirname, 'data.json');
 app.use(express.json());
 app.use(cors());
 
-// Ensure data file exists
+// Ensure data file exists with initial data
 if (!fs.existsSync(DATA_FILE)) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify({ assignments: {}, people: [] }, null, 2));
+  const initialData = {
+    assignments: {},
+    people: require('../src/data/people.json')
+  };
+  fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2));
+} else {
+  // Check if the file is empty or corrupted and reinitialize if needed
+  try {
+    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    if (!data.people || data.people.length === 0) {
+      const initialData = {
+        assignments: data.assignments || {},
+        people: require('../src/data/people.json')
+      };
+      fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2));
+    }
+  } catch (error) {
+    console.error('Error reading data file, reinitializing:', error);
+    const initialData = {
+      assignments: {},
+      people: require('../src/data/people.json')
+    };
+    fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2));
+  }
 }
 
 // API to get the current seating chart state

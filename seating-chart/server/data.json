@@ -1,16 +1,24 @@
 {
   "assignments": {
     "head-table": {
-      "1": {
-        "firstName": "Yasmin",
-        "lastName": "Arda",
-        "id": "person2"
-      }
+      "1": null
     },
     "table-1": {},
-    "table-2": {},
-    "table-3": {},
-    "table-4": {},
+    "table-2": {
+      "1": null,
+      "2": null,
+      "3": null,
+      "6": null,
+      "7": null
+    },
+    "table-3": {
+      "3": null,
+      "4": null
+    },
+    "table-4": {
+      "3": null,
+      "4": null
+    },
     "table-5": {},
     "table-6": {},
     "table-7": {},
