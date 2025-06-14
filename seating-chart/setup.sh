@@ -6,7 +6,7 @@
 set -e
 
 # Define project directory (adjust if different)
-PROJECT_DIR="Desktop/wedding-planner/wedding-seating-chart/seating-chart"
+PROJECT_DIR="/home/arms/Desktop/wedding-planner/wedding-seating-chart/seating-chart"
 BACKEND_PORT=3001
 FRONTEND_PORT=5173
 
