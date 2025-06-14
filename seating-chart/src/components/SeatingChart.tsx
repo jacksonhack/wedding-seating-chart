@@ -1,5 +1,5 @@
 // src/components/SeatingChart.tsx
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Table from './Table';
 import { type TableConfig } from '../config/tables';
 import { type Person } from '../types';
@@ -7,6 +7,8 @@ import { type Person } from '../types';
 type SeatingChartProps = {
   tables: TableConfig[];
   onAssignmentChange?: (personId: string, isSeated: boolean) => void;
+  assignments?: GlobalAssignments;
+  onAssignmentsUpdate?: (assignments: GlobalAssignments) => void;
 };
 
 // Type for tracking all seat assignments across tables
@@ -16,9 +18,17 @@ type GlobalAssignments = {
   };
 };
 
-const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange }) => {
+const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange, assignments = {}, onAssignmentsUpdate }) => {
   // Centralized state for all table assignments
-  const [globalAssignments, setGlobalAssignments] = useState<GlobalAssignments>({});
+  const [globalAssignments, setGlobalAssignments] = useState<GlobalAssignments>(assignments);
+  
+  useEffect(() => {
+    setGlobalAssignments(assignments);
+  }, [assignments]);
+  
+  useEffect(() => {
+    onAssignmentsUpdate?.(globalAssignments);
+  }, [globalAssignments, onAssignmentsUpdate]);
 
   // Initialize table assignments if not already present
   tables.forEach(table => {
