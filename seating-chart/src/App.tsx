@@ -3,6 +3,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import PeopleList from './components/PeopleList';
 import SeatingChart from './components/SeatingChart';
+import AddPersonForm from './components/AddPersonForm';
 import { type Person } from './types';
 import { defaultTables } from './config/tables';
 import peopleData from './data/people.json'
@@ -81,12 +82,19 @@ const App: React.FC = () => {
     });
   };
 
+  const handleAddPerson = (newPerson: Person) => {
+    setPeople(prev => [...prev, newPerson]);
+  };
+
   const unseatedPeople = people.filter(person => !seatedPeople.has(person.id));
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div style={{ display: 'flex', gap: '32px', padding: '20px' }}>
-        <PeopleList people={unseatedPeople} onGroupUpdate={setPeople} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <AddPersonForm onAddPerson={handleAddPerson} />
+          <PeopleList people={unseatedPeople} onGroupUpdate={setPeople} />
+        </div>
         <SeatingChart 
           tables={defaultTables} 
           onAssignmentChange={handleAssignmentChange} 
