@@ -1,50 +1,38 @@
 import React, { useRef } from 'react';
 import { useDrop } from 'react-dnd';
+import { type Person } from '../types';
 
-type Person = {
-  id: string;
-  firstName: string;
-  lastName: string;
-};
-
-type SeatProps = {
+type Props = {
   seatNumber: number;
   assignedPerson: Person | null;
-  onAssignPerson: (person: Person) => void;
+  onAssignPerson: (p: Person | Person[]) => void;
 };
 
-const Seat: React.FC<SeatProps> = ({ seatNumber, assignedPerson, onAssignPerson }) => {
+const Seat: React.FC<Props> = ({ seatNumber, assignedPerson, onAssignPerson }) => {
   const ref = useRef<HTMLLIElement>(null);
 
   const [, drop] = useDrop({
-    accept: 'PERSON',
-    drop: (item: Person) => {
-      onAssignPerson(item);
+    accept: 'PERSON_GROUP',
+    drop: (item: { people: Person[] }) => {
+      onAssignPerson(item.people);
     },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
   });
-
-  // Compose refs: attach both refs to the DOM node
-  const setRefs = (node: HTMLLIElement | null) => {
-    ref.current = node;
-    drop(node);
-  };
 
   return (
     <li
-      ref={setRefs}
+      ref={(el) => {
+        ref.current = el;
+        drop(el);
+      }}
       style={{
-        listStyle: 'none',
-        padding: '8px',
-        border: '1px solid #aaa',
+        border: '1px solid #888',
         borderRadius: '4px',
-        backgroundColor: assignedPerson ? '#def' : '#fff',
-        minWidth: '100px',
-        cursor: 'pointer',
-        userSelect: 'none',
+        padding: '6px',
+        width: '100px',
+        height: '40px',
+        background: assignedPerson ? '#cff' : '#eee',
+        textAlign: 'center',
+        lineHeight: '28px',
       }}
     >
       {assignedPerson
