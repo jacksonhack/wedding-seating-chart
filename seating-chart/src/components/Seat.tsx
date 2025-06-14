@@ -2,6 +2,16 @@ import React, { useRef } from 'react';
 import { useDrop, useDrag } from 'react-dnd';
 import { type Person } from '../types';
 
+// Simple hash function to generate a color from a string
+const stringToColor = (str: string) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+  return "00000".substring(0, 6 - c.length) + c;
+};
+
 type Props = {
   seatNumber: number;
   assignedPerson: Person | null;
@@ -35,7 +45,7 @@ const Seat: React.FC<Props> = ({ seatNumber, assignedPerson, onAssignPerson, onR
         }
       }}
       style={{
-        border: '1px solid #888',
+        border: assignedPerson?.groupId ? `3px solid #${stringToColor(assignedPerson.groupId)}` : '1px solid #888',
         borderRadius: '4px',
         padding: '6px',
         width: '100px',
@@ -43,6 +53,7 @@ const Seat: React.FC<Props> = ({ seatNumber, assignedPerson, onAssignPerson, onR
         background: assignedPerson ? '#cff' : '#eee',
         textAlign: 'center',
         position: 'relative',
+        cursor: assignedPerson ? 'grab' : 'default',
       }}
     >
       {assignedPerson ? (
@@ -61,7 +72,7 @@ const Seat: React.FC<Props> = ({ seatNumber, assignedPerson, onAssignPerson, onR
               borderRadius: '3px'
             }}
           >
-            Remove
+            {assignedPerson.groupId ? 'Remove Group' : 'Remove'}
           </button>
         </div>
       ) : (

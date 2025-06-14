@@ -27,7 +27,7 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange 
     }
   });
 
-  // Function to assign a person to a seat
+  // Function to assign a person or group to seats
   const assignPersonToSeat = useCallback((
     tableId: string, 
     seatNumber: number, 
@@ -41,8 +41,10 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange 
         next[tableId] = {};
       }
       
-      // Handle group assignment
-      if (Array.isArray(personOrGroup)) {
+      // Determine if it's a single person or a group from the drag item
+      const isGroupDrag = Array.isArray(personOrGroup) && personOrGroup.length > 1;
+      if (isGroupDrag) {
+        // Handle group assignment from PeopleList
         personOrGroup.forEach((person, i) => {
           const targetSeatNumber = (seatNumber + i).toString();
           
@@ -60,39 +62,102 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange 
           next[tableId][targetSeatNumber] = person;
           onAssignmentChange?.(person.id, true);
         });
-      } 
-      // Handle single person assignment
-      else {
-        const person = personOrGroup;
-        const targetSeatNumber = seatNumber.toString();
-        
-        // First, remove this person from any existing seat
-        for (const tId in next) {
-          for (const sNum in next[tId]) {
-            if (next[tId][sNum]?.id === person.id) {
-              next[tId][sNum] = null;
-              onAssignmentChange?.(person.id, false);
+      } else {
+        // Handle single person drag, check if part of a group
+        const person = Array.isArray(personOrGroup) ? personOrGroup[0] : personOrGroup;
+        if (person.groupId) {
+          // Find all seated members of this group
+          const groupMembers: Person[] = [];
+          for (const tId in prev) {
+            for (const sNum in prev[tId]) {
+              if (prev[tId][sNum]?.groupId === person.groupId) {
+                groupMembers.push(prev[tId][sNum] as Person);
+              }
             }
           }
+          // Remove all group members from current seats
+          for (const tId in next) {
+            for (const sNum in next[tId]) {
+              const seatedPerson = next[tId][sNum];
+              if (seatedPerson && seatedPerson.groupId === person.groupId) {
+                next[tId][sNum] = null;
+                onAssignmentChange?.(seatedPerson.id, false);
+              }
+            }
+          }
+          // Find a block of consecutive empty seats for the group
+          let startSeat = seatNumber;
+          let foundBlock = false;
+          const tableSeats = tables.find(t => t.id === tableId)?.seatCount || 0;
+          while (startSeat <= tableSeats - groupMembers.length) {
+            let canPlace = true;
+            for (let i = 0; i < groupMembers.length; i++) {
+              const checkSeat = (startSeat + i).toString();
+              if (next[tableId][checkSeat]) {
+                canPlace = false;
+                break;
+              }
+            }
+            if (canPlace) {
+              foundBlock = true;
+              break;
+            }
+            startSeat++;
+          }
+          // If a block is found, assign group members to new seats
+          if (foundBlock) {
+            groupMembers.forEach((groupMember, i) => {
+              const targetSeatNumber = (startSeat + i).toString();
+              next[tableId][targetSeatNumber] = groupMember;
+              onAssignmentChange?.(groupMember.id, true);
+            });
+          } else {
+            // If no block is found on this table, do not assign (keep removed)
+            // Optionally, could search other tables, but for simplicity, do nothing
+          }
+        } else {
+          const targetSeatNumber = seatNumber.toString();
+          
+          // First, remove this person from any existing seat
+          for (const tId in next) {
+            for (const sNum in next[tId]) {
+              if (next[tId][sNum]?.id === person.id) {
+                next[tId][sNum] = null;
+                onAssignmentChange?.(person.id, false);
+              }
+            }
+          }
+          
+          // Then assign to the new seat
+          next[tableId][targetSeatNumber] = person;
+          onAssignmentChange?.(person.id, true);
         }
-        
-        // Then assign to the new seat
-        next[tableId][targetSeatNumber] = person;
-        onAssignmentChange?.(person.id, true);
       }
       
       return next;
     });
-  }, []);
+  }, [tables]);
 
-  // Function to remove a person from a seat
+  // Function to remove a person or group from seats
   const removePersonFromSeat = useCallback((tableId: string, seatNumber: number) => {
     setGlobalAssignments(prev => {
       const next = { ...prev };
       const person = next[tableId]?.[seatNumber.toString()];
       if (person) {
-        onAssignmentChange?.(person.id, false);
-        next[tableId][seatNumber.toString()] = null;
+        if (person.groupId) {
+          // Remove all members of the group
+          for (const tId in next) {
+            for (const sNum in next[tId]) {
+              if (next[tId][sNum]?.groupId === person.groupId) {
+                onAssignmentChange?.(next[tId][sNum]?.id || '', false);
+                next[tId][sNum] = null;
+              }
+            }
+          }
+        } else {
+          onAssignmentChange?.(person.id, false);
+          next[tableId][seatNumber.toString()] = null;
+        }
       }
       return next;
     });
