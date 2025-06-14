@@ -17,7 +17,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     // Load initial state from server
-    fetch('http://localhost:3001/api/seating-chart')
+    // Dynamically set backend URL to the current machine's hostname/IP at port 3001
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || `http://${window.location.hostname}:3001`;
+    fetch(`${backendUrl}/api/seating-chart`)
       .then(response => {
         if (!response.ok) throw new Error('Failed to load data');
         return response.json();
@@ -51,7 +53,9 @@ const App: React.FC = () => {
   useEffect(() => {
     if (!loading) {
       // Save state to server whenever it changes
-      fetch('http://localhost:3001/api/seating-chart', {
+      // Dynamically set backend URL to the current machine's hostname/IP at port 3001
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || `http://${window.location.hostname}:3001`;
+      fetch(`${backendUrl}/api/seating-chart`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
