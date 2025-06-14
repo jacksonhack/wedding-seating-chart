@@ -278,17 +278,26 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
       if (person) {
         if (person.groupId) {
           // Remove all members of the group
+          const updatedSeats: GlobalAssignments = {};
           for (const tId in next) {
+            updatedSeats[tId] = { ...next[tId] };
             for (const sNum in next[tId]) {
               if (next[tId][sNum]?.groupId === person.groupId) {
                 onAssignmentChange?.(next[tId][sNum]?.id || '', false);
-                next[tId][sNum] = null;
+                updatedSeats[tId][sNum] = null;
               }
             }
           }
+          return updatedSeats;
         } else {
           onAssignmentChange?.(person.id, false);
-          next[tableId][seatNumber.toString()] = null;
+          return {
+            ...next,
+            [tableId]: {
+              ...next[tableId],
+              [seatNumber.toString()]: null
+            }
+          };
         }
       }
       return next;
