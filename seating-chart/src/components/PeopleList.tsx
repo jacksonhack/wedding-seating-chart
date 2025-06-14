@@ -19,6 +19,7 @@ type Props = {
 
 const PeopleList: React.FC<Props> = ({ people, onGroupUpdate }) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const toggle = (id: string) => {
     setSelected((prev) => {
@@ -40,8 +41,14 @@ const PeopleList: React.FC<Props> = ({ people, onGroupUpdate }) => {
     setSelected(new Set());
   };
 
+  // Filter people based on search term
+  const filteredPeople = people.filter(person => {
+    const fullName = `${person.firstName} ${person.lastName}`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase());
+  });
+
   // Sort people to group by groupId, with ungrouped at the end
-  const sortedPeople = [...people].sort((a, b) => {
+  const sortedPeople = [...filteredPeople].sort((a, b) => {
     if (a.groupId && !b.groupId) return -1;
     if (!a.groupId && b.groupId) return 1;
     if (a.groupId && b.groupId) return a.groupId.localeCompare(b.groupId);
@@ -62,6 +69,21 @@ const PeopleList: React.FC<Props> = ({ people, onGroupUpdate }) => {
     <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1, paddingBottom: '15px', borderBottom: '1px solid #e0e0e0' }}>
         <h3 style={{ margin: 0, marginBottom: '15px' }}>Guests</h3>
+        <input
+          type="text"
+          placeholder="Search guests..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '8px 12px',
+            marginBottom: '15px',
+            border: '1px solid #e0e0e0',
+            borderRadius: '6px',
+            fontSize: '1rem',
+            boxSizing: 'border-box',
+          }}
+        />
         <div style={{ display: 'flex', gap: '10px' }}>
           <button onClick={group} disabled={selected.size < 2}>
             Link as Group
