@@ -153,7 +153,6 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
           if (groupMembers.length > 1) {
             // Check if the group can fit starting from the selected seat
             const canFitGroup = canGroupFit(tableId, seatNumber, groupMembers.length, prev);
-            let startSeat = seatNumber;
             if (!canFitGroup) {
               // For circular tables, check if any starting position works with wrapping
               const tableSeats = tables.find(t => t.id === tableId)?.seatCount || 0;
@@ -172,7 +171,6 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
                   }
                   if (canPlace) {
                     foundValidStart = true;
-                    startSeat = start;
                     break;
                   }
                 }
@@ -197,7 +195,6 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
           }
           // Find a block of consecutive empty seats for the group, considering circular arrangement
           let startSeat = seatNumber;
-          let foundBlock = false;
           const tableSeats = tables.find(t => t.id === tableId)?.seatCount || 0;
           const isRectangular = tables.find(t => t.id === tableId)?.name.toLowerCase().includes('head') || false;
           
@@ -213,7 +210,6 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
                 }
               }
               if (canPlace) {
-                foundBlock = true;
                 break;
               }
               startSeat++;
@@ -231,7 +227,6 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
                 }
               }
               if (canPlace) {
-                foundBlock = true;
                 break;
               }
               startSeat = (startSeat % tableSeats) + 1;
