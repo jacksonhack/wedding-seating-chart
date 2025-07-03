@@ -7,32 +7,32 @@
   {
     "id": "table-1",
     "name": "Table 1",
-    "seatCount": 10
+    "seatCount": 8
   },
   {
     "id": "table-2",
     "name": "Table 2",
-    "seatCount": 10
+    "seatCount": 8
   },
   {
     "id": "table-3",
     "name": "Table 3",
-    "seatCount": 10
+    "seatCount": 8
   },
   {
     "id": "table-4",
     "name": "Table 4",
-    "seatCount": 10
+    "seatCount": 9
   },
   {
     "id": "table-5",
     "name": "Table 5",
-    "seatCount": 10
+    "seatCount": 8
   },
   {
     "id": "table-6",
     "name": "Table 6",
-    "seatCount": 10
+    "seatCount": 9
   },
   {
     "id": "table-7",
@@ -42,7 +42,7 @@
   {
     "id": "table-8",
     "name": "Table 8",
-    "seatCount": 10
+    "seatCount": 9
   },
   {
     "id": "table-9",
@@ -57,7 +57,7 @@
   {
     "id": "table-11",
     "name": "Table 11",
-    "seatCount": 10
+    "seatCount": 6
   },
   {
     "id": "table-12",
@@ -77,11 +77,6 @@
   {
     "id": "table-15",
     "name": "Table 15",
-    "seatCount": 10
-  },
-  {
-    "id": "table-16",
-    "name": "Table 16",
-    "seatCount": 10
+    "seatCount": 7
   }
 ]
