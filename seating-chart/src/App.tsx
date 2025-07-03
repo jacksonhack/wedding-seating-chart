@@ -13,6 +13,7 @@ const App: React.FC = () => {
   const [people, setPeople] = useState<Person[]>(peopleData);
   const [tables] = useState<TableConfig[]>(tablesData);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
 
   useEffect(() => {
     // Load initial state from server
@@ -75,11 +76,29 @@ const App: React.FC = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="App">
-        <div className="people-section">
-          <AddPersonForm onAddPerson={handleAddPerson} />
-          <PeopleList people={unseatedPeople} onGroupUpdate={setPeople} />
+        <div className={`people-section ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+          {!isSidebarCollapsed && (
+            <>
+              <button 
+                className="sidebar-collapse-button" 
+                onClick={() => setIsSidebarCollapsed(true)}
+              >
+                Collapse
+              </button>
+              <AddPersonForm onAddPerson={handleAddPerson} />
+              <PeopleList people={unseatedPeople} onGroupUpdate={setPeople} />
+            </>
+          )}
         </div>
         <div className="seating-chart-section">
+          {isSidebarCollapsed && (
+            <button 
+              className="sidebar-expand-button" 
+              onClick={() => setIsSidebarCollapsed(false)}
+            >
+              Expand
+            </button>
+          )}
           <SeatingChart 
             tables={tables} 
             onAssignmentChange={handleAssignmentChange} 

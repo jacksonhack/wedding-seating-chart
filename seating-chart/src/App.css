@@ -51,8 +51,16 @@ body {
   flex-direction: column;
   gap: 20px;
   height: 100%;
-  overflow-y: auto;
+  overflow-y: hidden;
   padding-right: 10px;
+  transition: min-width 0.3s ease, max-width 0.3s ease, flex 0.3s ease;
+  position: relative;
+}
+
+.people-section.collapsed {
+  min-width: 60px;
+  max-width: 60px;
+  flex: 0;
 }
 
 .seating-chart-section {
@@ -86,14 +94,32 @@ button {
   font-weight: 500;
 }
 
-button:hover {
-  background-color: #48406a;
-  transform: translateY(-1px);
+button.sidebar-collapse-button {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  margin-bottom: 10px;
+  text-align: center;
+  z-index: 10;
 }
 
-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
+button.sidebar-expand-button {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  width: auto;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  text-align: center;
+  z-index: 10;
+  transition: opacity 0.2s ease;
+}
+
+button.sidebar-expand-button:hover {
+  opacity: 1;
+  background-color: #48406a;
   transform: none;
 }
 

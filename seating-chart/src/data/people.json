@@ -234,12 +234,6 @@
     "assigned_table": null
   },
   {
-    "firstName": "Adam",
-    "lastName": "Elouardighi",
-    "id": "person41",
-    "assigned_table": null
-  },
-  {
     "firstName": "Halle",
     "lastName": "Farber",
     "id": "person42",
@@ -396,7 +390,7 @@
     "assigned_table": null
   },
   {
-    "firstName": "Tom",
+    "firstName": "Thomas",
     "lastName": "Hacker",
     "id": "person68",
     "assigned_table": null
@@ -642,7 +636,7 @@
     "assigned_table": null
   },
   {
-    "firstName": "Liz",
+    "firstName": "Elizabeth",
     "lastName": "Pennington",
     "id": "person109",
     "assigned_table": null
