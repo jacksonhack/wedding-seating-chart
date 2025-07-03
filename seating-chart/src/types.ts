@@ -4,6 +4,7 @@ export type Person = {
   lastName: string;
   groupId?: string | null;
   assigned_table?: string | null;
+  seatPosition?: number | null;
 };
 
 export type TableConfig = {

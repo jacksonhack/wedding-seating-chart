@@ -6,7 +6,7 @@ import { type Person } from '../types';
 
 type SeatingChartProps = {
   tables: TableConfig[];
-  onAssignmentChange: (personId: string, tableId: string | null) => void;
+  onAssignmentChange: (personId: string, tableId: string | null, seatPosition: number | null) => void;
   people: Person[];
 };
 
@@ -28,7 +28,8 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
   // Function to assign a person or group to a table
   const assignPersonToTable = useCallback((
     tableId: string, 
-    personOrGroup: Person | Person[]
+    personOrGroup: Person | Person[],
+    seatPosition?: number
   ) => {
     // Determine if it's a single person or a group from the drag item
     const isGroupDrag = Array.isArray(personOrGroup) && personOrGroup.length > 1;
@@ -39,8 +40,8 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
         setTimeout(() => setWarningMessage(null), 3000);
         return;
       }
-      personOrGroup.forEach(person => {
-        onAssignmentChange(person.id, tableId);
+      personOrGroup.forEach((person, index) => {
+        onAssignmentChange(person.id, tableId, seatPosition ? seatPosition + index : null);
       });
     } else {
       const person = Array.isArray(personOrGroup) ? personOrGroup[0] : personOrGroup;
@@ -52,14 +53,14 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
             setTimeout(() => setWarningMessage(null), 3000);
             return;
           }
-          groupMembers.forEach(groupMember => {
-            onAssignmentChange(groupMember.id, tableId);
+          groupMembers.forEach((groupMember, index) => {
+            onAssignmentChange(groupMember.id, tableId, seatPosition ? seatPosition + index : null);
           });
         } else {
-          onAssignmentChange(person.id, tableId);
+          onAssignmentChange(person.id, tableId, seatPosition || null);
         }
       } else {
-        onAssignmentChange(person.id, tableId);
+        onAssignmentChange(person.id, tableId, seatPosition || null);
       }
     }
   }, [people, onAssignmentChange, canGroupFit]);
@@ -71,24 +72,41 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
       if (person.groupId) {
         const groupMembers = people.filter(p => p.groupId === person.groupId);
         groupMembers.forEach(groupMember => {
-          onAssignmentChange(groupMember.id, null);
+          onAssignmentChange(groupMember.id, null, null);
         });
       } else {
-        onAssignmentChange(personId, null);
+        onAssignmentChange(personId, null, null);
       }
     }
   }, [people, onAssignmentChange]);
 
-  // Create assignments object for each table based on people assigned to it
+  // Create assignments object for each table based on people assigned to it, respecting seatPosition if available
   const getTableAssignments = (tableId: string) => {
     const assignedPeople = people.filter(p => p.assigned_table === tableId);
     const assignments: { [seatNumber: string]: Person | null } = {};
     const table = tables.find(t => t.id === tableId);
-    assignedPeople.forEach((person, index) => {
-      if (table && index < table.seatCount) {
-        assignments[(index + 1).toString()] = person;
+    
+    // First, try to place people in their specified seat positions
+    assignedPeople.forEach(person => {
+      if (person.seatPosition && table && person.seatPosition <= table.seatCount) {
+        assignments[person.seatPosition.toString()] = person;
       }
     });
+    
+    // Then, fill in any gaps with people who don't have a specific seat position
+    let nextSeat = 1;
+    assignedPeople.forEach(person => {
+      if (!person.seatPosition && table && nextSeat <= table.seatCount) {
+        while (assignments[nextSeat.toString()]) {
+          nextSeat++;
+        }
+        if (nextSeat <= table.seatCount) {
+          assignments[nextSeat.toString()] = person;
+          nextSeat++;
+        }
+      }
+    });
+    
     return assignments;
   };
 
@@ -134,15 +152,13 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
             seatCount={table.seatCount}
             assignments={getTableAssignments(table.id)}
             onAssignPerson={(seatNumber, person) => 
-              assignPersonToTable(table.id, person)
+              assignPersonToTable(table.id, person, seatNumber)
             }
             onRemovePerson={(seatNumber) => {
-              const assignedPeople = people.filter(p => p.assigned_table === table.id);
-              if (assignedPeople.length > seatNumber - 1) {
-                const personToRemove = assignedPeople[seatNumber - 1];
-                if (personToRemove) {
-                  removePersonFromTable(personToRemove.id);
-                }
+              const assignments = getTableAssignments(table.id);
+              const personToRemove = assignments[seatNumber.toString()];
+              if (personToRemove) {
+                removePersonFromTable(personToRemove.id);
               }
             }}
             isRectangular={table.name.toLowerCase().includes('head')}
