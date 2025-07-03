@@ -6,7 +6,7 @@ import { type Person } from '../types';
 
 type SeatingChartProps = {
   tables: TableConfig[];
-  onAssignmentChange: (personId: string, tableId: string | null, seatPosition: number | null) => void;
+  onAssignmentChange: (personId: string, tableId: string | null, seatPosition: number | null, ungroup: boolean) => void;
   people: Person[];
 };
 
@@ -41,7 +41,16 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
         return;
       }
       personOrGroup.forEach((person, index) => {
-        onAssignmentChange(person.id, tableId, seatPosition ? seatPosition + index : null);
+        if (seatPosition) {
+          // Check if the seat is occupied
+          const targetSeat = seatPosition + index;
+          const assignments = getTableAssignments(tableId);
+          const currentOccupant = assignments[targetSeat.toString()];
+          if (currentOccupant) {
+            onAssignmentChange(currentOccupant.id, null, null, true); // Remove current occupant and ungroup them
+          }
+        }
+        onAssignmentChange(person.id, tableId, seatPosition ? seatPosition + index : null, false);
       });
     } else {
       const person = Array.isArray(personOrGroup) ? personOrGroup[0] : personOrGroup;
@@ -54,13 +63,38 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
             return;
           }
           groupMembers.forEach((groupMember, index) => {
-            onAssignmentChange(groupMember.id, tableId, seatPosition ? seatPosition + index : null);
+            if (seatPosition) {
+              // Check if the seat is occupied
+              const targetSeat = seatPosition + index;
+              const assignments = getTableAssignments(tableId);
+              const currentOccupant = assignments[targetSeat.toString()];
+              if (currentOccupant) {
+                onAssignmentChange(currentOccupant.id, null, null, true); // Remove current occupant and ungroup them
+              }
+            }
+            onAssignmentChange(groupMember.id, tableId, seatPosition ? seatPosition + index : null, false);
           });
         } else {
-          onAssignmentChange(person.id, tableId, seatPosition || null);
+          if (seatPosition) {
+            // Check if the seat is occupied
+            const assignments = getTableAssignments(tableId);
+            const currentOccupant = assignments[seatPosition.toString()];
+            if (currentOccupant) {
+              onAssignmentChange(currentOccupant.id, null, null, true); // Remove current occupant and ungroup them
+            }
+          }
+          onAssignmentChange(person.id, tableId, seatPosition || null, false);
         }
       } else {
-        onAssignmentChange(person.id, tableId, seatPosition || null);
+        if (seatPosition) {
+          // Check if the seat is occupied
+          const assignments = getTableAssignments(tableId);
+          const currentOccupant = assignments[seatPosition.toString()];
+          if (currentOccupant) {
+            onAssignmentChange(currentOccupant.id, null, null, true); // Remove current occupant and ungroup them
+          }
+        }
+        onAssignmentChange(person.id, tableId, seatPosition || null, false);
       }
     }
   }, [people, onAssignmentChange, canGroupFit]);
@@ -72,10 +106,10 @@ const SeatingChart: React.FC<SeatingChartProps> = ({ tables, onAssignmentChange,
       if (person.groupId) {
         const groupMembers = people.filter(p => p.groupId === person.groupId);
         groupMembers.forEach(groupMember => {
-          onAssignmentChange(groupMember.id, null, null);
+          onAssignmentChange(groupMember.id, null, null, false);
         });
       } else {
-        onAssignmentChange(personId, null, null);
+        onAssignmentChange(personId, null, null, false);
       }
     }
   }, [people, onAssignmentChange]);

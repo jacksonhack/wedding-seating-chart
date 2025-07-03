@@ -60,9 +60,9 @@ const App: React.FC = () => {
     }
   }, [people, loading]);
 
-  const handleAssignmentChange = (personId: string, tableId: string | null, seatPosition: number | null = null) => {
+  const handleAssignmentChange = (personId: string, tableId: string | null, seatPosition: number | null = null, ungroup: boolean = false) => {
     setPeople(prev => prev.map(person => 
-      person.id === personId ? { ...person, assigned_table: tableId, seatPosition } : person
+      person.id === personId ? { ...person, assigned_table: tableId, seatPosition, ...(ungroup && { groupId: null }) } : person
     ));
   };
 
