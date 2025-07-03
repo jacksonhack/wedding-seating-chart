@@ -3,4 +3,11 @@ export type Person = {
   firstName: string;
   lastName: string;
   groupId?: string | null;
+  assigned_table?: string | null;
+};
+
+export type TableConfig = {
+  id: string;
+  name: string;
+  seatCount: number;
 };

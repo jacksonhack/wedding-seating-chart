@@ -5,14 +5,13 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import PeopleList from './components/PeopleList';
 import SeatingChart from './components/SeatingChart';
 import AddPersonForm from './components/AddPersonForm';
-import { type Person } from './types';
-import { defaultTables } from './config/tables';
-import peopleData from './data/people.json'
+import { type Person, type TableConfig } from './types';
+import peopleData from './data/people.json';
+import tablesData from './data/tables.json';
 
 const App: React.FC = () => {
   const [people, setPeople] = useState<Person[]>(peopleData);
-  const [seatedPeople, setSeatedPeople] = useState<Set<string>>(new Set());
-  const [assignments, setAssignments] = useState<{ [tableId: string]: { [seatNumber: string]: Person | null } }>({});
+  const [tables] = useState<TableConfig[]>(tablesData);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -27,20 +26,6 @@ const App: React.FC = () => {
       .then(data => {
         if (data.people && data.people.length > 0) {
           setPeople(data.people);
-        }
-        if (data.assignments) {
-          setAssignments(data.assignments);
-          // Update seatedPeople based on assignments
-          const seated = new Set<string>();
-          for (const tableId in data.assignments) {
-            for (const seatNum in data.assignments[tableId]) {
-              const person = data.assignments[tableId][seatNum];
-              if (person) {
-                seated.add(person.id);
-              }
-            }
-          }
-          setSeatedPeople(seated);
         }
         setLoading(false);
       })
@@ -60,7 +45,7 @@ const App: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ assignments, people }),
+        body: JSON.stringify({ people }),
       })
         .then(response => {
           if (!response.ok) throw new Error('Failed to save data');
@@ -73,25 +58,19 @@ const App: React.FC = () => {
           console.error('Error saving data:', error);
         });
     }
-  }, [assignments, people, loading]);
+  }, [people, loading]);
 
-  const handleAssignmentChange = (personId: string, isSeated: boolean) => {
-    setSeatedPeople(prev => {
-      const updated = new Set(prev);
-      if (isSeated) {
-        updated.add(personId);
-      } else {
-        updated.delete(personId);
-      }
-      return updated;
-    });
+  const handleAssignmentChange = (personId: string, tableId: string | null) => {
+    setPeople(prev => prev.map(person => 
+      person.id === personId ? { ...person, assigned_table: tableId } : person
+    ));
   };
 
   const handleAddPerson = (newPerson: Person) => {
     setPeople(prev => [...prev, newPerson]);
   };
 
-  const unseatedPeople = people.filter(person => !seatedPeople.has(person.id));
+  const unseatedPeople = people.filter(person => !person.assigned_table);
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -102,10 +81,9 @@ const App: React.FC = () => {
         </div>
         <div className="seating-chart-section">
           <SeatingChart 
-            tables={defaultTables} 
+            tables={tables} 
             onAssignmentChange={handleAssignmentChange} 
-            assignments={assignments} 
-            onAssignmentsUpdate={setAssignments} 
+            people={people} 
           />
         </div>
       </div>
